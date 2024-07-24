@@ -4,6 +4,8 @@
     border: 1px solid black;
     box-sizing: border-box;
     border-radius: 20px;
+    margin: auto;
+    margin-top: 200px;
 }
 
 #display{
