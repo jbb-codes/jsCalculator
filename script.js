@@ -1,7 +1,10 @@
-let leftOperand;
-let operationType;
-let rightOperand;
+let leftOperand = "";
+let rightOperand = "";
+let operationType = "";
 let displayValue = "";
+let currentExpression = "";
+let result = "";
+
 const maxNumDigits = 7;
 
 const addCalc = (a, b) => a + b;
@@ -12,58 +15,108 @@ const multiCalc = (a, b) => a * b;
 
 const diviCalc = (a, b) => a / b;
 
-function operate(operator, num1, num2) {}
-
-const equals = document.querySelector("#equalsButton");
-
-equals.addEventListener("click", () => {
-  if (display.textContent !== "0") {
-    displayValue = operate(operationType, leftOperand, rightOperand);
-    display.textContent = displayValue;
+function operate(operator, num1, num2) {
+  switch (operator) {
+    case "+":
+      result = addCalc(num1, num2);
+      break;
+    case "-":
+      result = subCalc(num1, num2);
+      break;
+    case "•":
+      result = multiCalc(num1, num2);
+      break;
+    case "÷":
+      result = diviCalc(num1, num2);
+      break;
   }
-});
+}
 
-const display = document.querySelector("#display");
+function expression() {
+  // expArr = expression.split("");
+  // const operatorStr = expArr.find(
+  //   (string) =>
+  //     string === "+" || string === "-" || string === "•" || string === "÷"
+  // );
+  // const operatorIndex = expArr.findIndex(
+  //   (index) => index === "+" || index === "-" || index === "•" || index === "÷"
+  // );
+  // leftOpStr = expression.slice(0, operatorIndex);
+  // rightOpStr = expression.slice(operatorIndex + 1, expression.length);
+  // console.log(leftOpStr, rightOpStr);
+  // operate(operatorStr, Number(leftOpStr), Number(rightOpStr));
+  operate(operationType, Number(leftOperand), Number(rightOperand));
+  leftOperand = result;
+  rightOperand = "";
+}
+
+function clear() {
+  display.innerText = "";
+  leftOperand = "";
+  rightOperand = "";
+  operationType = "";
+  displayValue = "";
+  result = "";
+}
+
+function appendNumber(number) {
+  if (operationType !== "") {
+    rightOperand += number.innerText;
+    displayValue = rightOperand;
+    currentExpression += number.innerText;
+  } else {
+    leftOperand += number.innerText;
+    displayValue = leftOperand;
+    currentExpression += number.innerText;
+  }
+}
+
+function chooseOperation(operation) {
+  operationType = operation.innerText;
+  currentExpression += operation.innerText;
+}
+
+function update(value) {
+  display.innerText = value;
+  console.log(leftOperand, rightOperand);
+}
 
 const numbers = document.querySelectorAll(".numberButton");
+const operatorButtons = document.querySelectorAll(".operationButton");
+const display = document.querySelector("#display");
+const clearScreen = document.querySelector("#acButton");
+const equalsButton = document.querySelector("#equalsButton");
 
 numbers.forEach((number) => {
   number.addEventListener("click", (e) => {
-    if (display.textContent !== "0" && displayValue.length <= maxNumDigits) {
-      displayValue += e.target.textContent;
-      display.textContent = displayValue;
-    } else if (
-      display.textContent === "0" &&
-      displayValue.length <= maxNumDigits
-    ) {
-      displayValue = e.target.textContent;
-      display.textContent = displayValue;
-    }
+    if (number.innerText === "." && displayValue.includes(".")) return;
+    appendNumber(number);
+    update(displayValue);
   });
 });
 
-const clearScreen = document.querySelector("#acButton");
-
 clearScreen.addEventListener("click", (e) => {
-  display.textContent = "0";
-  displayValue = "";
-  decimalButton.disabled = false;
-  e.stopPropagation();
+  clear();
 });
-
-const operatorButtons = document.querySelectorAll(".operationButton");
 
 operatorButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    operationType = e.target.textContent;
+    if (operationType !== "") {
+      expression(currentExpression);
+      update(result);
+      console.log(result);
+    }
+    chooseOperation(button);
   });
 });
 
-const decimalButton = document.querySelector("#decimalButton");
-
-decimalButton.addEventListener("click", (e) => {
-  displayValue += e.target.textContent;
-  display.textContent = displayValue;
-  decimalButton.disabled = true;
-  e.stopPropagation();
+equalsButton.addEventListener("click", () => {
+  controlOperator = false;
+  if (result !== "") {
+    operate(operationType, Number(result), Number(rightOperand));
+    update(result);
+  } else {
+    operate(operationType, Number(leftOperand), Number(rightOperand));
+    update(result);
+  }
 });
