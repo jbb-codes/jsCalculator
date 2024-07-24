@@ -10,7 +10,11 @@
     font-size: 75px;
     text-align: right;
     margin: 20px;
+    box-sizing: border-box;
+    padding-right: 10px;
     background-color: grey;
+    width: 360px;
+    height: 86px;
 }
 
 .calcKeys{
