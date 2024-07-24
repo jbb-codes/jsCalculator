@@ -2,10 +2,9 @@ let leftOperand = "";
 let rightOperand = "";
 let operationType = "";
 let displayValue = "";
-let currentExpression = "";
 let result = "";
 
-const maxNumDigits = 7;
+const maxNumDigits = 12;
 
 const addCalc = (a, b) => a + b;
 
@@ -33,21 +32,16 @@ function operate(operator, num1, num2) {
 }
 
 function expression() {
-  // expArr = expression.split("");
-  // const operatorStr = expArr.find(
-  //   (string) =>
-  //     string === "+" || string === "-" || string === "•" || string === "÷"
-  // );
-  // const operatorIndex = expArr.findIndex(
-  //   (index) => index === "+" || index === "-" || index === "•" || index === "÷"
-  // );
-  // leftOpStr = expression.slice(0, operatorIndex);
-  // rightOpStr = expression.slice(operatorIndex + 1, expression.length);
-  // console.log(leftOpStr, rightOpStr);
-  // operate(operatorStr, Number(leftOpStr), Number(rightOpStr));
+  if (rightOperand === "0" && operationType === "÷") {
+    rightOperand = "";
+    return update("No!");
+  }
   operate(operationType, Number(leftOperand), Number(rightOperand));
+  if (result.toString().includes(".")) result = result.toFixed(maxNumDigits);
+  if (result.length > maxNumDigits) result = Number(result).toExponential(8);
   leftOperand = result;
   rightOperand = "";
+  update(result);
 }
 
 function clear() {
@@ -60,20 +54,17 @@ function clear() {
 }
 
 function appendNumber(number) {
-  if (operationType !== "") {
+  if (operationType !== "" && rightOperand.length < maxNumDigits) {
     rightOperand += number.innerText;
     displayValue = rightOperand;
-    currentExpression += number.innerText;
-  } else {
+  } else if (leftOperand.length < maxNumDigits) {
     leftOperand += number.innerText;
     displayValue = leftOperand;
-    currentExpression += number.innerText;
   }
 }
 
 function chooseOperation(operation) {
   operationType = operation.innerText;
-  currentExpression += operation.innerText;
 }
 
 function update(value) {
@@ -102,21 +93,13 @@ clearScreen.addEventListener("click", (e) => {
 operatorButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
     if (operationType !== "") {
-      expression(currentExpression);
+      expression();
       update(result);
-      console.log(result);
     }
     chooseOperation(button);
   });
 });
 
 equalsButton.addEventListener("click", () => {
-  controlOperator = false;
-  if (result !== "") {
-    operate(operationType, Number(result), Number(rightOperand));
-    update(result);
-  } else {
-    operate(operationType, Number(leftOperand), Number(rightOperand));
-    update(result);
-  }
+  expression();
 });
